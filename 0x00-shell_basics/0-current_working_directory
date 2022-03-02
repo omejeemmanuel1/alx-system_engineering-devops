@@ -1,2 +1,2 @@
-#!/bin/bash
-echo $PWD
+#!/bin/bash > 0-curent_working_directory
+echo $PWD >> 0-curent_working_directory
