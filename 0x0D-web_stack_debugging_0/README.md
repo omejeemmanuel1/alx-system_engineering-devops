@@ -1,4 +1,4 @@
 # web stack debugging
-## Docker
+## Install Docker
 ## web debugging
 ## containerization
