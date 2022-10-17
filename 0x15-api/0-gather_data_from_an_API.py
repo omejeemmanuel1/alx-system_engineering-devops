@@ -1,38 +1,22 @@
 #!/usr/bin/python3
-"""Returns to-do list information for a given employee ID."""
-import requests
-import sys
+"""
+Summarize an employee's TODO list progress
+"""
+from argparse import ArgumentParser
+from os import path
+from requests import get
+from sys import argv
 
+API = 'https://jsonplaceholder.typicode.com'
 
-def tasks_done(id):
-    '''Script that displays an employee completed TODO tasks in stout
-        Parameters:
-        employee_id: Is an interger representing an employee id.
-    '''
+if __name__ == '__main__':
 
-    url = "https://jsonplaceholder.typicode.com/users/{}".format(id)
-    response = requests.get(url)
-    response_json = response.json()
-    employee_name = response_json.get("name")
-
-    url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(id)
-    todos = requests.get(url)
-    todos_json = todos.json()
-    number_tasks = len(todos_json)
-
-    task_compleated = 0
-    task_list = ""
-
-    for task in todos_json:
-        if task.get("completed") is True:
-            task_compleated += 1
-            task_list += "\t " + task.get("title") + "\n"
-
-    print("Employee {} is done with tasks({}/{}):".format(employee_name,
-                                                          task_compleated,
-                                                          number_tasks))
-    print(task_list[:-1])
-
-
-if __name__ == "__main__":
-    tasks_done(sys.argv[1])
+    parser = ArgumentParser(prog=path.basename(argv[0]))
+    parser.add_argument('id', type=int, help='employee ID')
+    args = parser.parse_args()
+    user = get('/'.join([API, 'users', str(args.id)])).json()
+    todo = get('/'.join([API, 'todos']), params={'userId': args.id}).json()
+    completed = [task for task in todo if task['completed'] is True]
+    print('Employee {} is done with tasks({}/{}):'.format(
+        user['name'], len(completed), len(todo)))
+    print('\n'.join('\t {}'.format(task['title']) for task in completed))

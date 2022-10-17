@@ -1,41 +1,22 @@
 #!/usr/bin/python3
-"Python script that exports data in CSV format"
-import requests
-import sys
+"""
+Summarize an employee's TODO list and write it to a file as a CSV
+"""
+from argparse import ArgumentParser
+from csv import QUOTE_ALL, writer
+from os import path
+from requests import get
+from sys import argv
 
+USERS = 'https://jsonplaceholder.typicode.com/users'
+TODOS = 'https://jsonplaceholder.typicode.com/todos'
 
-def tasks_done(id):
-    '''Script that exports an employee TODO tasks to a csv file
-        Parameters:
-        employee_id: Is an interger representing an employee id.
-    '''
-
-    url = "https://jsonplaceholder.typicode.com/users/{}".format(id)
-    response = requests.get(url)
-    response_json = response.json()
-    employee_name = response_json["name"]
-
-    url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(id)
-    todos = requests.get(url)
-    todos_json = todos.json()
-    number_tasks = len(todos_json)
-
-    task_compleated = 0
-    task_list = ""
-
-    file_name = "{}.csv".format(id)
-
-    with open(file_name, "a") as fd:
-        for todo in todos_json:
-            completed = todo.get("completed")
-            title = todo.get("title")
-            csv_data = "\"{}\",\"{}\",\"{}\",\"{}\"\n".format(id,
-                                                              employee_name,
-                                                              completed,
-                                                              title
-                                                              )
-            fd.write(csv_data)
-
-
-if __name__ == "__main__":
-    tasks_done(sys.argv[1])
+if __name__ == '__main__':
+    parser = ArgumentParser(prog=path.basename(argv[0]))
+    parser.add_argument('id', type=int, help='employee ID')
+    args = parser.parse_args()
+    user = get('/'.join([USERS, str(args.id)])).json()
+    with open('.'.join([str(args.id), 'csv']), 'w', newline='') as ostream:
+        writer(ostream, quoting=QUOTE_ALL).writerows(
+            [str(args.id), user['username'], task['completed'], task['title']]
+            for task in get(TODOS, params={'userId': args.id}).json())
