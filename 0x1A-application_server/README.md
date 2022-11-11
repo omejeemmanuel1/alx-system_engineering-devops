@@ -26,5 +26,5 @@
 
 
 ### [6. Deploy it!](./4-reload_gunicorn_no_downtime)
-* Once you’ve got your application server configured, you want to set it up to run by default when Linux is booted. This way when your server inevitably requires downtime (you have to shut it down or restart it for one reason or another), your Gunicorn process(es) will start up as part of the system initialization process, freeing you from having to manually restart them. For this we will use systemd. 
+* Once you’ve got your application server configured, you want to set it up to run by default when Linux is booted.. This way when your server inevitably requires downtime (you have to shut it down or restart it for one reason or another), your Gunicorn process(es) will start up as part of the system initialization process, freeing you from having to manually restart them. For this we will use systemd. 
 
